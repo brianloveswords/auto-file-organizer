@@ -6,8 +6,6 @@ type Validator<K> = SimpleValidator<K> | ValidatorFunction;
 
 type SimpleValidator<ValidatorKey> = [ValidatorKey] | [ValidatorKey, any[]];
 
-type Maybe<T> = undefined | T;
-
 type ValidatorFunction = (
     key: string,
     value: any,
@@ -34,12 +32,23 @@ export class ConfigValidator<ValidatorKey extends keyof DefaultValidators> {
         this.rules = rules;
     }
 
+    /* tslint:disable-next-line:cyclomatic-complexity */
     public validate(input: any): ValidationResult {
         const errors: ValidationError[] = [];
+
         for (const [key, validators] of Object.entries(this.rules)) {
+            const isOptional = this.isOptional(validators);
+
             for (const validator of validators) {
                 const [fn, args] = this.unpackRule(validator);
-                const possibleError = fn(key, input[key], input, ...args);
+                const value = input[key];
+
+                if (!value && isOptional) {
+                    continue;
+                }
+
+                const possibleError = fn(key, value, input, ...args);
+
                 if (possibleError) {
                     errors.push(possibleError);
                 }
@@ -48,26 +57,37 @@ export class ConfigValidator<ValidatorKey extends keyof DefaultValidators> {
         return [errors.length === 0, errors];
     }
 
+    private isOptional(validators: Array<Validator<ValidatorKey>>): boolean {
+        return validators.some(validator => {
+            if (typeof validator === "function") {
+                return false;
+            }
+            return validator[0] === "optional";
+        });
+    }
+
     private unpackRule(
         validator: Validator<ValidatorKey>,
     ): [ValidatorFunction, any[]] {
-        let validationFn;
+        let fn: ValidatorFunction;
         let args: any[] = [];
         if (typeof validator === "function") {
-            validationFn = validator;
+            fn = validator;
         } else {
             const name = validator[0];
-            validationFn = DEFAULT_VALIDATORS[name];
+            fn = DEFAULT_VALIDATORS[name];
             if (validator.length === 2) {
                 args = validator[1] as any[];
             }
         }
-        return [validationFn, args];
+        return [fn, args];
     }
 }
 
 const DEFAULT_VALIDATORS: DefaultValidators = {
-    isArray: (key, value): Maybe<ValidationError> => {
+    optional: () => undefined,
+
+    isArray: (key, value) => {
         return !Array.isArray(value)
             ? {
                 key,
