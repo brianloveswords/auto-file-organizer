@@ -1,0 +1,37 @@
+{
+    "name": "auto-file-organizer",
+    "version": "1.0.0",
+    "description": "",
+    "main": "built/index.js",
+    "scripts": {
+        "build": "tsc",
+        "start": "npm run build && node ./build/index",
+        "lint": "tslint -c tslint.json 'src/**/*.{ts,tsx}'",
+        "pretest": "npm run lint",
+        "test": "jest"
+    },
+    "author": "Brian J Brennan",
+    "license": "GPL-3.0",
+    "devDependencies": {
+        "@types/jest": "^21.1.2",
+        "@types/node": "^8.0.32",
+        "jest": "^21.1.0",
+        "rollup": "^0.50.0",
+        "ts-jest": "^21.1.0",
+        "tsc-watch": "^1.0.8",
+        "tslint": "^5.7.0",
+        "typescript": "^2.5.3"
+    },
+    "jest": {
+        "moduleFileExtensions": ["ts", "tsx", "js"],
+        "transform": {
+            "\\.(ts|tsx)$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
+        },
+        "testRegex": "/tests/.*\\.(ts|tsx|js)$"
+    },
+    "dependencies": {
+        "glob-to-regexp": "^0.3.0",
+        "mkdirp": "^0.5.1",
+        "moment": "^2.18.1"
+    }
+}
