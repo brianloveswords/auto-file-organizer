@@ -47,5 +47,28 @@ describe("ConfigValidator", () => {
                 expect(errors[0].validator).toBe("isArray");
             });
         });
+        describe("#isString", () => {
+            it("should pass when it's a string ", () => {
+                const [passed, errors] = new ConfigValidator({
+                    firstKey: [["isString"]],
+                }).validate({
+                    firstKey: "hi",
+                });
+                expect(passed).toBe(true);
+                expect(errors).toHaveLength(0);
+            });
+
+            it("should not pass if not a string", () => {
+                const [passed, errors] = new ConfigValidator({
+                    firstKey: [["isString"]],
+                }).validate({
+                    firstKey: 1,
+                });
+                expect(passed).toBe(false);
+                expect(errors).toHaveLength(1);
+                expect(errors[0].key).toBe("firstKey");
+                expect(errors[0].validator).toBe("isString");
+            });
+        });
     });
 });

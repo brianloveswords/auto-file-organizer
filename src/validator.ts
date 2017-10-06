@@ -94,4 +94,14 @@ const DEFAULT_VALIDATORS: DefaultValidators = {
             }
             : undefined;
     },
+
+    isString: (key, value) => {
+        return typeof value !== "string"
+            ? {
+                key,
+                message: `${key} must be a string`,
+                validator: "isString",
+            }
+            : undefined;
+    },
 };
