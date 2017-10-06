@@ -38,17 +38,15 @@ export class ConfigValidator<ValidatorKey extends keyof DefaultValidators> {
 
         for (const [key, validators] of Object.entries(this.rules)) {
             const isOptional = this.isOptional(validators);
+            const value = input[key];
+
+            if (!value && isOptional) {
+                continue;
+            }
 
             for (const validator of validators) {
                 const [fn, args] = this.unpackRule(validator);
-                const value = input[key];
-
-                if (!value && isOptional) {
-                    continue;
-                }
-
                 const possibleError = fn(key, value, input, ...args);
-
                 if (possibleError) {
                     errors.push(possibleError);
                 }
