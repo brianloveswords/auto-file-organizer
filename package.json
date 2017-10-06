@@ -27,7 +27,7 @@
         "transform": {
             "\\.(ts|tsx)$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
         },
-        "testRegex": "/tests/.*\\.(ts|tsx|js)$"
+        "testRegex": "/test/.*\\.(ts|tsx|js)$"
     },
     "dependencies": {
         "glob-to-regexp": "^0.3.0",
